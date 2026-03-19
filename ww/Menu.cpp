@@ -114,26 +114,22 @@ namespace seneca {
 
     size_t Menu::select() const {
 
-        if (h1.text) {
-            for (unsigned int i = 0; i < ind * indSize; i++) cout << " ";
-            cout << h1.text << endl;
-        }
-
-        
-        for (unsigned int i = 0; i < items; i++) {
-            attributes[i]->display();
-            cout << endl;
-        }
-
-        exit.display();
+    if (h1.text) {
+        h1.display();
         cout << endl;
-
-        
-        for (unsigned int i = 0; i < ind * indSize; i++) cout << " ";
-        cout << "> ";
-
-        return ut.getInt(0, items);
     }
+
+    for (unsigned int i = 0; i < items; i++) {
+        attributes[i]->display();
+        cout << endl;
+    }
+
+    exit.display();   
+
+    intput.display(); 
+
+    return ut.getInt(0, items);
+}
 
     size_t operator<<(ostream& ostr, const Menu& m) {
 
