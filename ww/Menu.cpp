@@ -20,7 +20,6 @@ I have done all the coding by myself and only copied the code
 that my professor provided to complete my workshops and assignments.
 -----------------------------------------------------------
 */
-
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <cstring>
@@ -36,8 +35,8 @@ namespace seneca {
     MenuItem::MenuItem(const char* content,
         unsigned int indent,
         unsigned int indentSize,
-        unsigned int row)
-    {
+        unsigned int row) {
+
         text = nullptr;
         ind = indent;
         indSize = indentSize;
@@ -53,63 +52,56 @@ namespace seneca {
         delete[] text;
     }
 
-    MenuItem::operator bool() const {
-        return text != nullptr;
-    }
+    void MenuItem::display() const {
 
-    ostream& MenuItem::display(ostream& ostr) const {
+        if (!text) return;
 
-        if (!(*this)) {
-            return ostr; 
+        // indentation
+        for (unsigned int i = 0; i < ind * indSize; i++) {
+            cout << " ";
         }
 
-        for (unsigned int i = 0; i < ind * indSize; i++)
-            ostr << ' ';
-
+        // numbering
         if (indexOfRow > 0) {
-            ostr.width(2);
-            ostr << indexOfRow << "- ";
+            cout.width(2);
+            cout << indexOfRow << "- ";
         }
-        else if (indexOfRow == 0) {
-            ostr.width(2);
-            ostr << 0 << "- ";
+        else if (indexOfRow == 0 && text[0] != '>') {
+            cout.width(2);
+            cout << 0 << "- ";
         }
 
-        ostr << text;
-
-        return ostr;
+        cout << text;
     }
 
     Menu::Menu(const char* title,
         const char* exitOption,
         unsigned int indent,
         unsigned int indentSize)
-        : h1(title, indent, indentSize, -1),
+        : h1(title, indent, indentSize, 0),
           exit(exitOption, indent, indentSize, 0),
-          intput("> ", indent, indentSize, -1)
+          intput("> ", indent, indentSize, 0)
     {
         ind = indent;
         indSize = indentSize;
         items = 0;
 
-        for (unsigned int i = 0; i < MaximumNumberOfMenuItems; i++)
+        for (unsigned int i = 0; i < MaximumNumberOfMenuItems; i++) {
             attributes[i] = nullptr;
+        }
     }
 
     Menu::~Menu() {
         for (unsigned int i = 0; i < items; i++) {
             delete attributes[i];
-            attributes[i] = nullptr;
         }
     }
 
     Menu& Menu::operator<<(const char* content) {
 
         if (items < MaximumNumberOfMenuItems) {
-
             attributes[items] =
                 new MenuItem(content, ind, indSize, items + 1);
-
             items++;
         }
 
@@ -118,25 +110,32 @@ namespace seneca {
 
     size_t Menu::select() const {
 
-        if (h1)
-            h1.display(cout) << endl;
-
-        for (unsigned int i = 0; i < items; i++) {
-            attributes[i]->display(cout) << endl;
+        // title
+        if (h1.text) {
+            h1.display();
+            cout << endl;
         }
 
-        exit.display(cout) << endl;
+        // items
+        for (unsigned int i = 0; i < items; i++) {
+            attributes[i]->display();
+            cout << endl;
+        }
 
-        intput.display(cout);
+        // exit
+        exit.display();
+        cout << endl;
+
+        // prompt (NO endl here!!)
+        intput.display();
 
         return ut.getInt(0, items);
     }
 
     size_t operator<<(ostream& ostr, const Menu& m) {
-
-        if (&ostr == &cout)
+        if (&ostr == &cout) {
             return m.select();
-
+        }
         return 0;
     }
 
